@@ -23,7 +23,7 @@ export interface RankingResponse {
   industry_name: string;
   total_companies: number;
   entries: RankingEntry[];
-  last_updated: string;
+  last_updated: string | null;
 }
 
 export interface Industry {
@@ -45,7 +45,7 @@ export interface ScanInfo {
   id: string;
   overall_score: number;
   platform_scores: PlatformScores;
-  query_results?: any[];
+  query_results?: unknown[];
   analysis?: {
     strengths?: string[];
     weaknesses?: string[];

@@ -68,26 +68,31 @@ async def run_scan(scan_id: str, db: Session, settings: Settings) -> None:
         # 5. LLMs abfragen
         llm_client = LLMClient(settings)
         all_results: List[Dict[str, Any]] = []
+        analyzer = Analyzer()
 
         # Platform-Konfiguration aus Industry Config
         platforms_config = industry_config.get("platforms", {})
 
         for query_obj in queries:
             query_text = query_obj.get("query", "")
-            query_type = query_obj.get("type", "general")
+            category = query_obj.get("category", "general")
+            intent = query_obj.get("intent", "")
 
             # Alle Plattformen für diese Query abfragen
-            platform_responses = llm_client.query_all_platforms(
+            platform_responses = await llm_client.query_all_platforms(
                 query=query_text,
                 platforms=platforms_config
             )
 
             # 6. Jede Response analysieren
-            analyzer = Analyzer()
             for platform_response in platform_responses:
                 platform = platform_response.get("platform", "unknown")
-                response_text = platform_response.get("response", "")
+                response_text = platform_response.get("response_text", "")
                 model_used = platform_response.get("model", "unknown")
+
+                # Skip failed responses
+                if not platform_response.get("success", False):
+                    continue
 
                 analysis_result = analyzer.analyze_response(
                     company_name=company.name,
@@ -100,11 +105,12 @@ async def run_scan(scan_id: str, db: Session, settings: Settings) -> None:
                 # Ergebnis anreichern
                 result = {
                     "query": query_text,
-                    "query_type": query_type,
+                    "category": category,
+                    "intent": intent,
                     "platform": platform,
                     "model": model_used,
-                    "response": response_text,
-                    "analysis": analysis_result
+                    "response_text": response_text,
+                    **analysis_result,
                 }
 
                 all_results.append(result)
@@ -123,6 +129,10 @@ async def run_scan(scan_id: str, db: Session, settings: Settings) -> None:
 
         # Overall Score berechnen
         overall_score = scorer.calculate_overall_score(platform_scores)
+
+        # UI contract: always expose all known platforms, even if disabled/skipped.
+        for p in ("chatgpt", "claude", "gemini", "perplexity"):
+            platform_scores.setdefault(p, 0.0)
 
         # 8. Report generieren
         report_generator = ReportGenerator()

@@ -11,6 +11,7 @@ venv/
 # Environment
 .env
 *.db
+test_report.html
 
 # IDE
 .vscode/

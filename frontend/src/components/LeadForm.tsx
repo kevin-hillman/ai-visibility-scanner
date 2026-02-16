@@ -6,16 +6,20 @@ import { submitLead, LeadData } from '@/lib/api';
 interface LeadFormProps {
   industryId?: string;
   sourcePage?: string;
+  prefill?: {
+    company_name?: string;
+    message?: string;
+  };
 }
 
-export default function LeadForm({ industryId, sourcePage }: LeadFormProps) {
-  const [formData, setFormData] = useState({
+export default function LeadForm({ industryId, sourcePage, prefill }: LeadFormProps) {
+  const [formData, setFormData] = useState(() => ({
     name: '',
     email: '',
-    company_name: '',
+    company_name: prefill?.company_name || '',
     phone: '',
-    message: '',
-  });
+    message: prefill?.message || '',
+  }));
 
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');

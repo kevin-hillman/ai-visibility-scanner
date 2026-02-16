@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app.dependencies import get_db, get_settings
 from app.models import Company, Scan
 from app.schemas import ScanCreate, ScanResponse
+from app.api.contract_utils import extract_competitors, normalize_platform_scores
 from app.workers.scan_worker import run_scan
 from app.config import Settings
 
@@ -58,9 +59,10 @@ def create_scan(
         company_id=scan.company_id,
         status=scan.status,
         overall_score=scan.overall_score,
-        platform_scores=scan.platform_scores,
+        platform_scores=normalize_platform_scores(scan.platform_scores),
         query_results=scan.query_results,
         analysis=scan.analysis,
+        competitors=extract_competitors(scan.analysis),
         recommendations=scan.recommendations,
         started_at=scan.started_at,
         completed_at=scan.completed_at
@@ -117,9 +119,10 @@ def create_bulk_scans(
             company_id=s.company_id,
             status=s.status,
             overall_score=s.overall_score,
-            platform_scores=s.platform_scores,
+            platform_scores=normalize_platform_scores(s.platform_scores),
             query_results=s.query_results,
             analysis=s.analysis,
+            competitors=extract_competitors(s.analysis),
             recommendations=s.recommendations,
             started_at=s.started_at,
             completed_at=s.completed_at
@@ -149,9 +152,10 @@ def get_scan(
         company_id=scan.company_id,
         status=scan.status,
         overall_score=scan.overall_score,
-        platform_scores=scan.platform_scores,
+        platform_scores=normalize_platform_scores(scan.platform_scores),
         query_results=scan.query_results,
         analysis=scan.analysis,
+        competitors=extract_competitors(scan.analysis),
         recommendations=scan.recommendations,
         started_at=scan.started_at,
         completed_at=scan.completed_at
@@ -211,9 +215,10 @@ async def run_scan_endpoint(
         company_id=scan.company_id,
         status=scan.status,
         overall_score=scan.overall_score,
-        platform_scores=scan.platform_scores,
+        platform_scores=normalize_platform_scores(scan.platform_scores),
         query_results=scan.query_results,
         analysis=scan.analysis,
+        competitors=extract_competitors(scan.analysis),
         recommendations=scan.recommendations,
         started_at=scan.started_at,
         completed_at=scan.completed_at

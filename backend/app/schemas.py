@@ -47,6 +47,7 @@ class ScanResponse(BaseModel):
     platform_scores: dict = {}
     query_results: list = []
     analysis: dict = {}
+    competitors: list[dict] = []
     recommendations: list = []
     started_at: datetime | None = None
     completed_at: datetime | None = None
@@ -59,6 +60,7 @@ class RankingEntry(BaseModel):
     overall_score: float
     platform_scores: dict
     industry_id: str
+    scan_id: str
 
 
 class RankingResponse(BaseModel):

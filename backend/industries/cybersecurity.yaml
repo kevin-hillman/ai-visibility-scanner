@@ -7,17 +7,17 @@ region: DACH
 
 platforms:
   chatgpt:
-    weight: 0.30
+    weight: 0.35
     model: "gpt-4o"
   claude:
-    weight: 0.20
+    weight: 0.35
     model: "claude-sonnet-4-5-20250929"
   gemini:
-    weight: 0.15
+    weight: 0.30
     model: "gemini-2.0-flash"
-  perplexity:
-    weight: 0.35
-    model: "sonar"
+  # perplexity:  # Deaktiviert - API-Key prüfen
+  #   weight: 0.20
+  #   model: "sonar"
 
 scoring:
   mention_types:
@@ -28,7 +28,7 @@ scoring:
     not_mentioned: 0.0
 
 queries:
-  total: 50
+  total: 10
   categories:
     brand:
       count: 8

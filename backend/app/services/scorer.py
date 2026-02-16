@@ -127,7 +127,10 @@ class Scorer:
         total_weight = 0.0
 
         for platform, score in platform_scores.items():
-            weight = self.platform_weights.get(platform, 0.25)
+            # Ignore unknown platforms rather than applying a default weight.
+            # This keeps overall_score stable even if contract normalization adds
+            # platforms that are not configured for the given industry.
+            weight = self.platform_weights.get(platform, 0.0)
             weighted_sum += score * weight
             total_weight += weight
 

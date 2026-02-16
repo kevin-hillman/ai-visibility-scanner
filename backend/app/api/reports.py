@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.dependencies import get_db
 from app.models import Scan, Company
 from app.schemas import ReportResponse, CompanyResponse, ScanResponse
+from app.api.contract_utils import extract_competitors, normalize_platform_scores
 
 router = APIRouter()
 
@@ -64,9 +65,10 @@ def get_report(
         company_id=scan.company_id,
         status=scan.status,
         overall_score=scan.overall_score,
-        platform_scores=scan.platform_scores,
+        platform_scores=normalize_platform_scores(scan.platform_scores),
         query_results=scan.query_results,
         analysis=scan.analysis,
+        competitors=extract_competitors(scan.analysis),
         recommendations=scan.recommendations,
         started_at=scan.started_at,
         completed_at=scan.completed_at

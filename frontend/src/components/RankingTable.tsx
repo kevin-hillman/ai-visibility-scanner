@@ -12,6 +12,26 @@ interface RankingTableProps {
 type SortField = 'rank' | 'company_name' | 'overall_score' | 'chatgpt' | 'claude' | 'gemini' | 'perplexity';
 type SortOrder = 'asc' | 'desc';
 
+function SortIcon({ field, sortField, sortOrder }: { field: SortField; sortField: SortField; sortOrder: SortOrder }) {
+  if (sortField !== field) {
+    return (
+      <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+      </svg>
+    );
+  }
+
+  return sortOrder === 'asc' ? (
+    <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+    </svg>
+  ) : (
+    <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
+  );
+}
+
 export default function RankingTable({ entries, onRowClick }: RankingTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<SortField>('rank');
@@ -27,7 +47,7 @@ export default function RankingTable({ entries, onRowClick }: RankingTableProps)
   };
 
   const filteredAndSortedEntries = useMemo(() => {
-    let filtered = entries.filter(
+    const filtered = entries.filter(
       (entry) =>
         entry.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entry.domain.toLowerCase().includes(searchTerm.toLowerCase())
@@ -55,25 +75,6 @@ export default function RankingTable({ entries, onRowClick }: RankingTableProps)
 
     return filtered;
   }, [entries, searchTerm, sortField, sortOrder]);
-
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) {
-      return (
-        <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-        </svg>
-      );
-    }
-    return sortOrder === 'asc' ? (
-      <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-      </svg>
-    ) : (
-      <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-      </svg>
-    );
-  };
 
   return (
     <div className="space-y-4">
@@ -107,7 +108,7 @@ export default function RankingTable({ entries, onRowClick }: RankingTableProps)
                   className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
                 >
                   <span>Rang</span>
-                  <SortIcon field="rank" />
+                  <SortIcon field="rank" sortField={sortField} sortOrder={sortOrder} />
                 </button>
               </th>
               <th className="text-left py-4 px-4">
@@ -116,7 +117,7 @@ export default function RankingTable({ entries, onRowClick }: RankingTableProps)
                   className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
                 >
                   <span>Unternehmen</span>
-                  <SortIcon field="company_name" />
+                  <SortIcon field="company_name" sortField={sortField} sortOrder={sortOrder} />
                 </button>
               </th>
               <th className="text-left py-4 px-4">
@@ -128,7 +129,7 @@ export default function RankingTable({ entries, onRowClick }: RankingTableProps)
                   className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mx-auto"
                 >
                   <span>Gesamt</span>
-                  <SortIcon field="overall_score" />
+                  <SortIcon field="overall_score" sortField={sortField} sortOrder={sortOrder} />
                 </button>
               </th>
               <th className="text-center py-4 px-4">
@@ -137,7 +138,7 @@ export default function RankingTable({ entries, onRowClick }: RankingTableProps)
                   className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mx-auto"
                 >
                   <span>ChatGPT</span>
-                  <SortIcon field="chatgpt" />
+                  <SortIcon field="chatgpt" sortField={sortField} sortOrder={sortOrder} />
                 </button>
               </th>
               <th className="text-center py-4 px-4">
@@ -146,7 +147,7 @@ export default function RankingTable({ entries, onRowClick }: RankingTableProps)
                   className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mx-auto"
                 >
                   <span>Claude</span>
-                  <SortIcon field="claude" />
+                  <SortIcon field="claude" sortField={sortField} sortOrder={sortOrder} />
                 </button>
               </th>
               <th className="text-center py-4 px-4">
@@ -155,7 +156,7 @@ export default function RankingTable({ entries, onRowClick }: RankingTableProps)
                   className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mx-auto"
                 >
                   <span>Gemini</span>
-                  <SortIcon field="gemini" />
+                  <SortIcon field="gemini" sortField={sortField} sortOrder={sortOrder} />
                 </button>
               </th>
               <th className="text-center py-4 px-4">
@@ -164,7 +165,7 @@ export default function RankingTable({ entries, onRowClick }: RankingTableProps)
                   className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mx-auto"
                 >
                   <span>Perplexity</span>
-                  <SortIcon field="perplexity" />
+                  <SortIcon field="perplexity" sortField={sortField} sortOrder={sortOrder} />
                 </button>
               </th>
             </tr>

@@ -13,6 +13,7 @@ from app.dependencies import get_db
 from app.models import Company, Scan
 from app.schemas import RankingResponse, RankingEntry
 from app.api.industries import load_industry_config
+from app.api.contract_utils import normalize_platform_scores
 from app.dependencies import get_settings
 from app.config import Settings
 
@@ -71,10 +72,11 @@ def get_industry_ranking(
 
         if latest_scan and latest_scan.overall_score is not None:
             ranking_data.append({
+                "scan_id": latest_scan.id,
                 "company_name": company.name,
                 "domain": company.domain,
                 "overall_score": latest_scan.overall_score,
-                "platform_scores": latest_scan.platform_scores,
+                "platform_scores": normalize_platform_scores(latest_scan.platform_scores),
                 "industry_id": company.industry_id,
                 "completed_at": latest_scan.completed_at
             })
@@ -97,7 +99,8 @@ def get_industry_ranking(
             domain=item["domain"],
             overall_score=item["overall_score"],
             platform_scores=item["platform_scores"],
-            industry_id=item["industry_id"]
+            industry_id=item["industry_id"],
+            scan_id=item["scan_id"]
         )
         for idx, item in enumerate(paginated_data)
     ]

@@ -113,6 +113,7 @@ class LLMClient:
             Liste von Ergebnis-Dictionaries
         """
         tasks = []
+        attempted_platforms: list[str] = []
 
         for platform_name, platform_config in platforms.items():
             model = platform_config.get("model", "")
@@ -123,12 +124,14 @@ class LLMClient:
 
             task = self.query_platform(platform_name, query, model)
             tasks.append(task)
+            attempted_platforms.append(platform_name)
 
-        # Parallel ausführen mit 30s Timeout
+        # Parallel ausführen mit 60s Timeout
+        timeout_s = 60.0
         try:
             results = await asyncio.wait_for(
                 asyncio.gather(*tasks, return_exceptions=True),
-                timeout=30.0
+                timeout=timeout_s
             )
         except asyncio.TimeoutError:
             results = [
@@ -138,10 +141,10 @@ class LLMClient:
                     "model": platforms[p].get("model", ""),
                     "response_text": "",
                     "success": False,
-                    "error": "Timeout nach 30s",
-                    "latency_ms": 30000,
+                    "error": f"Timeout nach {int(timeout_s)}s",
+                    "latency_ms": int(timeout_s * 1000),
                 }
-                for p in platforms.keys()
+                for p in attempted_platforms
             ]
 
         # Filter exceptions

@@ -50,9 +50,12 @@ class QueryGenerator:
             "location": company_location or "DACH",
         }
 
+        # Enforce queries.total budget by scaling category counts deterministically.
+        category_target_counts = self._get_category_target_counts()
+
         # Für jede Kategorie Queries generieren
         for category_name, category_config in self.categories.items():
-            target_count = category_config.get("count", 10)
+            target_count = category_target_counts.get(category_name, 0)
             templates = category_config.get("templates", [])
 
             category_queries = self._generate_category_queries(
@@ -67,6 +70,58 @@ class QueryGenerator:
         random.shuffle(all_queries)
 
         return all_queries
+
+    def _get_category_target_counts(self) -> dict[str, int]:
+        """
+        Computes per-category query counts. If queries.total is present, scale the
+        configured category counts to match the total deterministically.
+        """
+        raw_counts: dict[str, int] = {}
+        for category_name, category_config in self.categories.items():
+            try:
+                raw = int(category_config.get("count", 10) or 0)
+            except (TypeError, ValueError):
+                raw = 0
+            raw_counts[category_name] = max(0, raw)
+
+        total_budget_raw = self.query_config.get("total", None)
+        if total_budget_raw is None:
+            return raw_counts
+
+        try:
+            total_budget = int(total_budget_raw)
+        except (TypeError, ValueError):
+            return raw_counts
+
+        if total_budget <= 0:
+            return {name: 0 for name in raw_counts}
+
+        total_weight = sum(raw_counts.values())
+        if total_weight <= 0:
+            return {name: 0 for name in raw_counts}
+
+        # Largest Remainder Method (Hamilton) with deterministic tie-breaking.
+        scaled: dict[str, float] = {
+            name: (count * total_budget / total_weight)
+            for name, count in raw_counts.items()
+        }
+        base: dict[str, int] = {name: int(value) for name, value in scaled.items()}  # floor
+
+        allocated = sum(base.values())
+        remainder = total_budget - allocated
+        if remainder <= 0:
+            return base
+
+        remainders = sorted(
+            ((scaled[name] - base[name], name) for name in base.keys()),
+            key=lambda x: (-x[0], x[1])
+        )
+
+        for i in range(remainder):
+            _, name = remainders[i % len(remainders)]
+            base[name] += 1
+
+        return base
 
     def _generate_category_queries(
         self,
