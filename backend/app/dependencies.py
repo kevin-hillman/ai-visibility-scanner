@@ -5,7 +5,7 @@ from app.config import Settings
 
 
 def get_db():
-    return _get_db()
+    yield from _get_db()
 
 
 @lru_cache

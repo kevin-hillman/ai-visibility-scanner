@@ -5,7 +5,7 @@ Verwaltet Unternehmen in der Datenbank.
 from typing import Optional, List
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -124,7 +124,7 @@ def get_company(
 @router.post("/import", response_model=List[CompanyResponse], status_code=status.HTTP_201_CREATED)
 def import_companies(
     companies_data: List[CompanyImport],
-    industry_id: str,
+    industry_id: str = Query(...),
     db: Session = Depends(get_db)
 ) -> List[CompanyResponse]:
     """
