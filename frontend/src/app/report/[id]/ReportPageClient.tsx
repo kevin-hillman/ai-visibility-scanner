@@ -7,6 +7,7 @@ import PlatformBar from '@/components/PlatformBar';
 import RecommendationCard from '@/components/RecommendationCard';
 import LeadForm from '@/components/LeadForm';
 import KpiCard from '@/components/KpiCard';
+import InfoTooltip from '@/components/InfoTooltip';
 import SentimentBar from '@/components/SentimentBar';
 import QueryTable from '@/components/QueryTable';
 
@@ -56,7 +57,11 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
           {company.description && <p className="text-gray-600 dark:text-gray-400 mt-3 max-w-3xl text-lg">{company.description}</p>}
         </div>
 
-        <div className="mb-16 flex justify-center">
+        <div className="mb-16 flex flex-col items-center">
+          <div className="flex items-center justify-center gap-1.5 mb-4">
+            <span className="text-sm text-gray-500 dark:text-gray-400">Gesamt-Score</span>
+            <InfoTooltip text="Gewichteter Durchschnitt Ihrer Sichtbarkeit über alle KI-Plattformen. Gewichtung: ChatGPT 35%, Claude 35%, Gemini 30%." />
+          </div>
           <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-2xl p-8 shadow-sm">
             <ScoreCircle score={scan.overall_score} size={220} label="Gesamt-Score" />
           </div>
@@ -100,7 +105,10 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
         </div>
 
         <div className="mb-16">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Performance nach Plattform</h2>
+          <div className="flex items-center gap-1.5 mb-6">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Performance nach Plattform</h2>
+            <InfoTooltip text="Score pro KI-Plattform: 0 = nie erwähnt, 100 = in jeder Antwort an prominenter Stelle positiv empfohlen." />
+          </div>
           <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-xl p-6 shadow-sm">
             <div className="space-y-5">
               <PlatformBar
@@ -145,7 +153,10 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
         </div>
 
         <div className="mb-16">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Detaillierte Analyse</h2>
+          <div className="flex items-center gap-1.5 mb-6">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Detaillierte Analyse</h2>
+            <InfoTooltip text="Automatisch erkannte Stärken, Schwächen und Chancen basierend auf der Auswertung aller KI-Antworten." />
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {analysis.strengths && analysis.strengths.length > 0 && (
               <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-xl overflow-hidden shadow-sm">
@@ -201,28 +212,51 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
           </div>
         )}
 
-        {scan.competitors && scan.competitors.length > 0 && (
+        {analysis.top_competitors && analysis.top_competitors.length > 0 && (
           <div className="mb-16">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Top Wettbewerber</h2>
-            <div className="max-w-2xl bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-xl overflow-hidden shadow-sm">
-              <table className="w-full">
-                <thead><tr className="border-b border-gray-200 dark:border-[#2e3039]"><th className="text-left py-3 px-5 text-sm font-medium text-gray-500 dark:text-gray-400">Unternehmen</th><th className="text-right py-3 px-5 text-sm font-medium text-gray-500 dark:text-gray-400">Nennungen</th></tr></thead>
-                <tbody>
-                  {scan.competitors.slice(0, 10).map((c, i) => (
-                    <tr key={i} className="border-t border-gray-100 dark:border-[#2e3039] even:bg-gray-50 dark:even:bg-white/[0.02]">
-                      <td className="py-3 px-5 text-gray-900 dark:text-white text-sm">{c.name}</td>
-                      <td className="py-3 px-5 text-right"><span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 font-semibold text-sm">{c.mentions}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="flex items-center gap-1.5 mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Wettbewerber im Vergleich</h2>
+              <InfoTooltip text="Wie oft werden Ihre Wettbewerber in KI-Antworten zu den gleichen Fragen erwähnt?" />
+            </div>
+            <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-xl p-6 shadow-sm max-w-3xl">
+              {/* Own company first */}
+              <div className="mb-5 pb-5 border-b border-gray-100 dark:border-gray-800">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-teal-600 dark:text-teal-400">{company.name} (Sie)</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white tabular-nums">{analysis.total_mentions ?? 0} Erwähnungen</span>
+                </div>
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-teal-500 rounded-full transition-all" style={{ width: `${Math.min(((analysis.total_mentions ?? 0) / Math.max(analysis.total_queries ?? 1, 1)) * 100, 100)}%` }} />
+                </div>
+              </div>
+              {/* Competitors */}
+              <div className="space-y-3">
+                {analysis.top_competitors.slice(0, 8).map((c, i) => {
+                  const maxMentions = Math.max(analysis.total_mentions ?? 0, ...analysis.top_competitors.map(tc => tc.mentions));
+                  const widthPct = maxMentions > 0 ? (c.mentions / maxMentions) * 100 : 0;
+                  return (
+                    <div key={i}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{c.name}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 tabular-nums">{c.mentions}</span>
+                      </div>
+                      <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-gray-400 dark:bg-gray-500 rounded-full transition-all" style={{ width: `${widthPct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
 
         {recommendations && recommendations.length > 0 && (
           <div className="mb-16">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Handlungsempfehlungen</h2>
+            <div className="flex items-center gap-1.5 mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Handlungsempfehlungen</h2>
+              <InfoTooltip text="Konkrete Maßnahmen um Ihre Sichtbarkeit in KI-Chatbots zu verbessern, priorisiert nach erwartetem Impact." />
+            </div>
             <div className="space-y-3">
               {recommendations.map((r, i) => <RecommendationCard key={i} index={i + 1} text={r} />)}
             </div>
