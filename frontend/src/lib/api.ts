@@ -127,7 +127,7 @@ export async function fetchReport(scanId: string): Promise<ReportResponse> {
 }
 
 export async function fetchIndustries(): Promise<Industry[]> {
-  const response = await fetch(`${API_BASE}/industries`);
+  const response = await fetch(`${API_BASE}/industries/`);
   if (!response.ok) {
     throw new Error(`Failed to fetch industries: ${response.statusText}`);
   }
