@@ -6,6 +6,7 @@ import ScoreCircle from '@/components/ScoreCircle';
 import PlatformBar from '@/components/PlatformBar';
 import RecommendationCard from '@/components/RecommendationCard';
 import LeadForm from '@/components/LeadForm';
+import KpiCard from '@/components/KpiCard';
 
 type ReportPageClientProps = {
   scanId: string;
@@ -35,7 +36,7 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
   }
 
   const { company, scan, recommendations } = initialReport;
-  const analysis = scan.analysis || { strengths: [], weaknesses: [], opportunities: [] };
+  const analysis = scan.analysis;
 
   return (
     <div className="py-12">
@@ -56,6 +57,43 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
         <div className="mb-16 flex justify-center">
           <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-2xl p-8 shadow-sm">
             <ScoreCircle score={scan.overall_score} size={220} label="Gesamt-Score" />
+          </div>
+        </div>
+
+        <div className="mb-16">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <KpiCard
+              label="Erwähnungsrate"
+              value={`${(analysis.mention_rate ?? 0).toFixed(0)}%`}
+              subtitle={`${analysis.total_mentions ?? 0} von ${analysis.total_queries ?? 0} Antworten`}
+              tooltip="In wie vielen KI-Antworten wird Ihr Unternehmen erwähnt? Berechnet über alle Plattformen und Queries."
+              colorClass={(analysis.mention_rate ?? 0) >= 50 ? 'text-emerald-600 dark:text-emerald-400' : (analysis.mention_rate ?? 0) >= 25 ? 'text-yellow-600 dark:text-yellow-400' : 'text-rose-600 dark:text-rose-400'}
+            />
+            <KpiCard
+              label="Ø Position"
+              value={analysis.avg_position ? `#${analysis.avg_position.toFixed(1)}` : '–'}
+              subtitle="in KI-Antworten"
+              tooltip="Durchschnittliche Listenposition wenn Ihr Unternehmen erwähnt wird. Niedrigere Zahl = prominenter platziert."
+              colorClass={analysis.avg_position && analysis.avg_position <= 3 ? 'text-emerald-600 dark:text-emerald-400' : 'text-yellow-600 dark:text-yellow-400'}
+            />
+            <KpiCard
+              label="Queries analysiert"
+              value={String(analysis.total_queries ?? 0)}
+              subtitle="branchenspezifische Fragen"
+              tooltip="Anzahl der branchenspezifischen Fragen, die an ChatGPT, Claude, Gemini und Perplexity gestellt wurden."
+            />
+            <KpiCard
+              label="Sentiment"
+              value={(() => {
+                const sd = analysis.sentiment_distribution;
+                if (!sd) return '–';
+                const total = (sd.positive ?? 0) + (sd.neutral ?? 0) + (sd.negative ?? 0);
+                return total > 0 ? `${Math.round(((sd.positive ?? 0) / total) * 100)}%` : '–';
+              })()}
+              subtitle="positiv"
+              tooltip="Anteil positiver Erwähnungen. Zeigt, wie vorteilhaft KI-Chatbots über Ihr Unternehmen sprechen."
+              colorClass="text-emerald-600 dark:text-emerald-400"
+            />
           </div>
         </div>
 
