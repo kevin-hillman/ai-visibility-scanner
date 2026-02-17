@@ -52,6 +52,7 @@ class Scan(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     total_cost_usd: Mapped[float | None] = mapped_column(Float, nullable=True)
     total_tokens_used: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    query_version: Mapped[str | None] = mapped_column(String, nullable=True)
 
     company: Mapped["Company"] = relationship("Company", back_populates="scans")
 

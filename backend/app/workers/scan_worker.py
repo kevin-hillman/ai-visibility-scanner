@@ -69,11 +69,15 @@ async def run_scan(scan_id: str, db: Session, settings: Settings) -> None:
             company_location=company.location
         )
 
+        # Query-Version auf Scan setzen
+        scan.query_version = query_generator.query_version
+
         # 5. LLMs abfragen
         llm_client = LLMClient(settings)
         cost_calculator = CostCalculator()
         all_results: List[Dict[str, Any]] = []
-        analyzer = Analyzer()
+        known_competitors = industry_config.get("known_competitors", [])
+        analyzer = Analyzer(known_competitors=known_competitors)
 
         # Platform-Konfiguration aus Industry Config
         platforms_config = industry_config.get("platforms", {})

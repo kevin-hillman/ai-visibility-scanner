@@ -53,7 +53,7 @@ def client(test_db):
 
 @pytest.fixture
 def sample_industry_config():
-    """Minimal Industry Config für Tests"""
+    """Minimal Industry Config für Tests (Pre-compiled Query Format)"""
     return {
         "id": "test_industry",
         "name": "Test Industry",
@@ -74,30 +74,38 @@ def sample_industry_config():
             }
         },
         "queries": {
-            "total": 4,
-            "categories": {
-                "brand": {
-                    "count": 2,
-                    "templates": [
-                        "{company_name} Erfahrungen",
-                        "Ist {company_name} gut für {service}?",
-                    ]
+            "version": "test-v1",
+            "generic": [
+                {
+                    "query": "Beste Cybersecurity Anbieter in Deutschland",
+                    "category": "service",
+                    "intent": "Suche nach Lösungsanbietern",
                 },
-                "service": {
-                    "count": 2,
-                    "templates": [
-                        "Beste {service} Anbieter in {region}",
-                        "Top {service} für Unternehmen",
-                    ]
+                {
+                    "query": "Wie schütze ich mein Unternehmen vor Ransomware?",
+                    "category": "problem",
+                    "intent": "Problemlösungs-orientierte Suche",
                 },
-            },
-            "services": ["Penetration Testing", "SOC as a Service"],
-            "threats": ["Ransomware"],
-            "regions": ["Deutschland"],
-            "industry_terms": ["Cybersecurity"],
-            "target_audiences": ["Mittelstand"],
-            "competitors": ["CrowdStrike"],
-        }
+                {
+                    "query": "Top 10 IT-Sicherheitsunternehmen im DACH-Raum",
+                    "category": "comparison",
+                    "intent": "Vergleichs- und Auswahlsuche",
+                },
+            ],
+            "brand": [
+                {
+                    "query": "{company_name} Erfahrungen und Bewertungen",
+                    "category": "brand",
+                    "intent": "Direkte Markenbewertung",
+                },
+                {
+                    "query": "Ist {company_name} ein guter Anbieter?",
+                    "category": "brand",
+                    "intent": "Direkte Markenbewertung",
+                },
+            ],
+        },
+        "known_competitors": ["CrowdStrike", "Sophos"],
     }
 
 

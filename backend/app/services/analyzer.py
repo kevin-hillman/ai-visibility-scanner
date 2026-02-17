@@ -6,6 +6,13 @@ from collections import defaultdict
 class Analyzer:
     """Analysiert LLM-Antworten auf Firmen-Erwähnungen und Kontext."""
 
+    def __init__(self, known_competitors: list[str] | None = None):
+        """
+        Args:
+            known_competitors: Liste bekannter Wettbewerber aus Industry Config.
+        """
+        self._known_competitors = known_competitors or []
+
     def analyze_response(
         self,
         company_name: str,
@@ -305,9 +312,8 @@ class Analyzer:
         Returns:
             Liste erkannter Wettbewerber-Namen
         """
-        # Bekannte Cybersecurity-Unternehmen (sollte aus Industry Config kommen)
-        # Hier Fallback-Liste
-        known_competitors = [
+        # Bekannte Wettbewerber aus Industry Config (oder Fallback)
+        competitors_list = self._known_competitors or [
             "CrowdStrike", "Palo Alto Networks", "Fortinet", "Check Point",
             "Cisco", "SentinelOne", "Trend Micro", "Sophos", "McAfee",
             "Symantec", "FireEye", "Proofpoint", "Zscaler", "Okta",
@@ -316,7 +322,7 @@ class Analyzer:
 
         mentioned = []
 
-        for competitor in known_competitors:
+        for competitor in competitors_list:
             if competitor.lower() == company_name.lower():
                 continue
 

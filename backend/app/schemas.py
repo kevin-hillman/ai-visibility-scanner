@@ -129,7 +129,7 @@ class CostSummary(BaseModel):
     total_calls: int
     avg_cost_per_scan: float
     platform_breakdown: dict[str, float]
-    daily_costs: list[dict[str, float]]
+    daily_costs: list[dict[str, str | float]]
 
 
 class ScanCostDetail(BaseModel):

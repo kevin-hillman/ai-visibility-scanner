@@ -15,9 +15,6 @@ platforms:
   gemini:
     weight: 0.30
     model: "gemini-2.0-flash"
-  # perplexity:  # Deaktiviert - API-Key prüfen
-  #   weight: 0.20
-  #   model: "sonar"
 
 scoring:
   mention_types:
@@ -28,139 +25,166 @@ scoring:
     not_mentioned: 0.0
 
 queries:
-  total: 10
-  categories:
-    brand:
-      count: 8
-      description: "Direkte Markensuchen"
-      templates:
-        - "{company_name} Erfahrungen und Bewertungen"
-        - "Ist {company_name} ein guter Anbieter für {service}?"
-        - "{company_name} vs {competitor}"
-        - "Was sagen Kunden über {company_name}?"
-        - "{company_name} Cybersecurity Bewertung"
-        - "Kennt jemand {company_name}? Erfahrungen?"
-        - "{company_name} Alternative"
-        - "Wie gut ist {company_name} im Bereich {service}?"
-    service:
-      count: 12
-      description: "Service-spezifische Suchen"
-      templates:
-        - "Beste Anbieter für {service} in {region}"
-        - "Empfehlung {service} Dienstleister {region}"
-        - "Top {service} Unternehmen für Mittelstand"
-        - "Wer bietet gute {service} Lösungen an?"
-        - "{service} Anbieter Vergleich {region}"
-        - "Professionelle {service} für Unternehmen"
-        - "{service} Dienstleister mit guten Referenzen"
-        - "Zertifizierter {service} Anbieter {region}"
-        - "Günstiger {service} Anbieter für KMU"
-        - "Enterprise {service} Lösung gesucht"
-        - "{service} as a Service Anbieter"
-        - "Erfahrene {service} Beratung"
-    problem:
-      count: 12
-      description: "Problembasierte Suchen"
-      templates:
-        - "Wie schütze ich mein Unternehmen vor {threat}?"
-        - "Was tun bei {threat} Angriff?"
-        - "Hilfe bei {problem} gesucht"
-        - "Unternehmen wurde gehackt - wer kann helfen?"
-        - "Schutz vor {threat} für Mittelstand"
-        - "IT-Sicherheitsvorfall - welche Firma hilft?"
-        - "{threat} Prävention für Unternehmen"
-        - "Wie erkenne ich {threat} frühzeitig?"
-        - "Notfall IT-Security Hilfe {region}"
-        - "Sicherheitslücke gefunden - was tun?"
-        - "Cyber-Versicherung und {service} kombiniert"
-        - "NIS2 Compliance - wer unterstützt?"
-    comparison:
-      count: 8
-      description: "Vergleichssuchen"
-      templates:
-        - "Vergleich der besten {service} Anbieter {region}"
-        - "{service}: Welcher Anbieter ist der beste?"
-        - "Alternative zu {competitor} für {service}"
-        - "Top 10 {industry_term} Unternehmen {region}"
-        - "{service} Anbieter Ranking {region}"
-        - "Bester {service} Anbieter Preis-Leistung"
-        - "{competitor} oder lieber ein anderer Anbieter?"
-        - "Marktführer {service} {region}"
-    industry:
-      count: 10
-      description: "Branchenspezifische Suchen"
-      templates:
-        - "{industry_term} Dienstleister {region}"
-        - "Managed {service} für Unternehmen"
-        - "IT-Sicherheit Beratung für {target_audience}"
-        - "{industry_term} Firma für {target_audience}"
-        - "BSI-zertifizierter {industry_term} Anbieter"
-        - "ISO 27001 Beratung {region}"
-        - "{industry_term} Startup {region}"
-        - "KRITIS-Schutz Dienstleister"
-        - "SOC Betreiber {region}"
-        - "Cyber Defense Center Anbieter {region}"
+  version: "2026-02-v1"
 
-  services:
-    - Penetration Testing
-    - SOC as a Service
-    - Incident Response
-    - Security Audit
-    - Managed Security
-    - Cloud Security
-    - Endpoint Protection
-    - SIEM
-    - Vulnerability Management
-    - Security Awareness Training
-    - CISO as a Service
-    - OT Security
-    - Zero Trust Implementation
-    - Identity & Access Management
-    - Data Loss Prevention
+  generic:
+    # --- Service-Queries (Lösungssuche) ---
+    - query: "Welche Cybersecurity-Anbieter sind die besten für den Mittelstand in Deutschland?"
+      category: service
+      intent: "Suche nach Lösungsanbietern"
 
-  threats:
-    - Ransomware
-    - Phishing-Angriffe
-    - DDoS-Attacken
-    - Supply-Chain-Angriffe
-    - Insider-Bedrohungen
-    - Advanced Persistent Threats
-    - Social Engineering
-    - Zero-Day-Exploits
+    - query: "Empfehlung für Penetration Testing Dienstleister im DACH-Raum"
+      category: service
+      intent: "Suche nach Lösungsanbietern"
 
-  regions:
-    - Deutschland
-    - DACH-Raum
-    - Schweiz
-    - Österreich
-    - NRW
-    - Bayern
-    - Baden-Württemberg
+    - query: "Top Managed Security Service Provider für Unternehmen"
+      category: service
+      intent: "Suche nach Lösungsanbietern"
 
-  industry_terms:
-    - Cybersecurity
-    - IT-Sicherheit
-    - Informationssicherheit
-    - Cyber-Abwehr
-    - IT-Security
-    - Cybersicherheit
+    - query: "Wer bietet gute SOC as a Service Lösungen in Deutschland an?"
+      category: service
+      intent: "Suche nach Lösungsanbietern"
 
-  target_audiences:
-    - Mittelstand
-    - Konzerne
-    - KRITIS-Betreiber
-    - Finanzdienstleister
-    - Gesundheitswesen
-    - Öffentliche Verwaltung
-    - E-Commerce
-    - Fertigungsindustrie
+    - query: "Professionelle Incident Response Dienstleister im DACH-Raum"
+      category: service
+      intent: "Suche nach Lösungsanbietern"
 
-  competitors:
-    - CrowdStrike
-    - Palo Alto Networks
-    - Fortinet
-    - Sophos
-    - Trend Micro
-    - Check Point
-    - SentinelOne
-    - Darktrace
+    - query: "Zertifizierter Security Audit Anbieter für deutsche Unternehmen"
+      category: service
+      intent: "Suche nach Lösungsanbietern"
+
+    - query: "Cloud Security Anbieter Vergleich für Enterprise-Kunden"
+      category: service
+      intent: "Suche nach Lösungsanbietern"
+
+    - query: "SIEM-Lösung für mittelständische Unternehmen gesucht"
+      category: service
+      intent: "Suche nach Lösungsanbietern"
+
+    # --- Problem-Queries (Problemlösung) ---
+    - query: "Wie schütze ich mein Unternehmen vor Ransomware-Angriffen?"
+      category: problem
+      intent: "Problemlösungs-orientierte Suche"
+
+    - query: "Was tun bei einem Cyberangriff auf mein Unternehmen?"
+      category: problem
+      intent: "Problemlösungs-orientierte Suche"
+
+    - query: "Hilfe bei Phishing-Angriff gesucht — welche Firma kann helfen?"
+      category: problem
+      intent: "Problemlösungs-orientierte Suche"
+
+    - query: "IT-Sicherheitsvorfall im Unternehmen — welcher Dienstleister hilft sofort?"
+      category: problem
+      intent: "Problemlösungs-orientierte Suche"
+
+    - query: "NIS2-Compliance — welches Unternehmen unterstützt bei der Umsetzung?"
+      category: problem
+      intent: "Problemlösungs-orientierte Suche"
+
+    - query: "Supply-Chain-Angriffe verhindern — welche Lösungen gibt es?"
+      category: problem
+      intent: "Problemlösungs-orientierte Suche"
+
+    # --- Comparison-Queries (Vergleich/Auswahl) ---
+    - query: "Vergleich der besten Cybersecurity-Anbieter in Deutschland"
+      category: comparison
+      intent: "Vergleichs- und Auswahlsuche"
+
+    - query: "Top 10 IT-Sicherheitsunternehmen im DACH-Raum"
+      category: comparison
+      intent: "Vergleichs- und Auswahlsuche"
+
+    - query: "Welcher Managed Security Anbieter hat das beste Preis-Leistungs-Verhältnis?"
+      category: comparison
+      intent: "Vergleichs- und Auswahlsuche"
+
+    - query: "Marktführer für IT-Sicherheit in Deutschland — wer liegt vorn?"
+      category: comparison
+      intent: "Vergleichs- und Auswahlsuche"
+
+    - query: "Endpoint Protection: Welcher Anbieter ist der beste?"
+      category: comparison
+      intent: "Vergleichs- und Auswahlsuche"
+
+    - query: "Ranking der besten Cybersicherheitsfirmen für Unternehmen"
+      category: comparison
+      intent: "Vergleichs- und Auswahlsuche"
+
+    # --- Industry-Queries (Branchenwissen) ---
+    - query: "IT-Sicherheit Beratung für KRITIS-Betreiber in Deutschland"
+      category: industry
+      intent: "Branchen- und Expertenwissen-Suche"
+
+    - query: "BSI-zertifizierter Cybersecurity-Anbieter gesucht"
+      category: industry
+      intent: "Branchen- und Expertenwissen-Suche"
+
+    - query: "ISO 27001 Beratung für Unternehmen im DACH-Raum"
+      category: industry
+      intent: "Branchen- und Expertenwissen-Suche"
+
+    - query: "SOC-Betreiber für mittelständische Unternehmen in Deutschland"
+      category: industry
+      intent: "Branchen- und Expertenwissen-Suche"
+
+    - query: "Cyber Defense Center Anbieter in Deutschland"
+      category: industry
+      intent: "Branchen- und Expertenwissen-Suche"
+
+    - query: "OT-Security Spezialisten für Fertigungsindustrie"
+      category: industry
+      intent: "Branchen- und Expertenwissen-Suche"
+
+    - query: "Cybersecurity für Finanzdienstleister — welche Anbieter sind spezialisiert?"
+      category: industry
+      intent: "Branchen- und Expertenwissen-Suche"
+
+    - query: "Informationssicherheit für öffentliche Verwaltung — wer ist empfehlenswert?"
+      category: industry
+      intent: "Branchen- und Expertenwissen-Suche"
+
+  brand:
+    - query: "Ist {company_name} ein guter Anbieter für Cybersecurity?"
+      category: brand
+      intent: "Direkte Markenbewertung"
+
+    - query: "{company_name} Erfahrungen und Bewertungen"
+      category: brand
+      intent: "Direkte Markenbewertung"
+
+    - query: "Was sagen Kunden über {company_name}?"
+      category: brand
+      intent: "Direkte Markenbewertung"
+
+    - query: "Kennt jemand {company_name}? Lohnt sich der Anbieter?"
+      category: brand
+      intent: "Direkte Markenbewertung"
+
+    - query: "Wie gut ist {company_name} im Vergleich zu anderen Cybersecurity-Anbietern?"
+      category: brand
+      intent: "Direkte Markenbewertung"
+
+    - query: "{company_name} Cybersecurity Bewertung und Test"
+      category: brand
+      intent: "Direkte Markenbewertung"
+
+known_competitors:
+  - CrowdStrike
+  - Palo Alto Networks
+  - Fortinet
+  - Sophos
+  - Trend Micro
+  - Check Point
+  - SentinelOne
+  - Darktrace
+  - Cisco
+  - McAfee
+  - Symantec
+  - FireEye
+  - Proofpoint
+  - Zscaler
+  - Okta
+  - Tenable
+  - Rapid7
+  - Qualys
