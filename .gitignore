@@ -7,11 +7,18 @@ dist/
 build/
 .venv/
 venv/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
 
 # Environment
 .env
 *.db
 test_report.html
+
+# Local dev (logs, pid files, etc.)
+.dev/
 
 # IDE
 .vscode/

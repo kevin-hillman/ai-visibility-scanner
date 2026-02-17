@@ -271,6 +271,7 @@ class QueryGenerator:
             Liste zusätzlicher Query-Variationen
         """
         variations = []
+        seen_queries = {q.get("query", "") for q in existing_queries if q.get("query")}
         variation_prefixes = [
             "Welche",
             "Was sind die besten",
@@ -279,17 +280,24 @@ class QueryGenerator:
             "Wie finde ich",
         ]
 
-        for i in range(count):
-            if not existing_queries:
-                break
+        if not existing_queries or count <= 0:
+            return variations
 
-            # Wähle zufällige existierende Query
+        # Generate variations without breaking brand-query invariants (e.g. casing of company name)
+        # and avoid duplicates where possible.
+        max_attempts = max(10, count * 10)
+        attempts = 0
+
+        while len(variations) < count and attempts < max_attempts:
+            attempts += 1
             base_query = random.choice(existing_queries)
             prefix = random.choice(variation_prefixes)
 
-            # Erstelle Variation
-            varied_query = f"{prefix} {base_query['query'].lower()}"
+            varied_query = f"{prefix} {base_query['query']}"
+            if varied_query in seen_queries:
+                continue
 
+            seen_queries.add(varied_query)
             variations.append({
                 "query": varied_query,
                 "category": base_query["category"],
