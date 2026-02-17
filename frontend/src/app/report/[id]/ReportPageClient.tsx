@@ -57,16 +57,6 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
           {company.description && <p className="text-gray-600 dark:text-gray-400 mt-3 max-w-3xl text-lg">{company.description}</p>}
         </div>
 
-        <div className="mb-16 flex flex-col items-center">
-          <div className="flex items-center justify-center gap-1.5 mb-4">
-            <span className="text-sm text-gray-500 dark:text-gray-400">Gesamt-Score</span>
-            <InfoTooltip text="Gewichteter Durchschnitt Ihrer Sichtbarkeit über alle KI-Plattformen. Gewichtung: ChatGPT 35%, Claude 35%, Gemini 30%." />
-          </div>
-          <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-2xl p-8 shadow-sm">
-            <ScoreCircle score={scan.overall_score} size={220} label="Gesamt-Score" />
-          </div>
-        </div>
-
         <div className="mb-16">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <KpiCard
@@ -104,53 +94,103 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
           </div>
         </div>
 
-        <div className="mb-16">
+        <div className="mb-16 bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-2xl p-8 shadow-sm">
           <div className="flex items-center gap-1.5 mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Performance nach Plattform</h2>
-            <InfoTooltip text="Score pro KI-Plattform: 0 = nie erwähnt, 100 = in jeder Antwort an prominenter Stelle positiv empfohlen." />
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">KI-Sichtbarkeit</h2>
+            <InfoTooltip text="Gewichteter Durchschnitt Ihrer Sichtbarkeit über alle KI-Plattformen. Gewichtung: ChatGPT 35%, Claude 35%, Gemini 30%." />
           </div>
-          <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-xl p-6 shadow-sm">
-            <div className="space-y-5">
-              <PlatformBar
-                platform="chatgpt"
-                score={scan.platform_scores.chatgpt}
-                mentionRate={analysis.platform_performance?.chatgpt?.mention_rate}
-                totalMentions={analysis.platform_performance?.chatgpt?.total_mentions}
-                totalQueries={analysis.platform_performance?.chatgpt?.total_queries}
-              />
-              <PlatformBar
-                platform="claude"
-                score={scan.platform_scores.claude}
-                mentionRate={analysis.platform_performance?.claude?.mention_rate}
-                totalMentions={analysis.platform_performance?.claude?.total_mentions}
-                totalQueries={analysis.platform_performance?.claude?.total_queries}
-              />
-              <PlatformBar
-                platform="gemini"
-                score={scan.platform_scores.gemini}
-                mentionRate={analysis.platform_performance?.gemini?.mention_rate}
-                totalMentions={analysis.platform_performance?.gemini?.total_mentions}
-                totalQueries={analysis.platform_performance?.gemini?.total_queries}
-              />
-              <PlatformBar
-                platform="perplexity"
-                score={scan.platform_scores.perplexity}
-                mentionRate={analysis.platform_performance?.perplexity?.mention_rate}
-                totalMentions={analysis.platform_performance?.perplexity?.total_mentions}
-                totalQueries={analysis.platform_performance?.perplexity?.total_queries}
-              />
+          <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8 items-start">
+            <div className="flex justify-center">
+              <ScoreCircle score={scan.overall_score} size={180} label="Gesamt-Score" />
             </div>
-            {analysis.sentiment_distribution && (
-              <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-                <SentimentBar
-                  positive={analysis.sentiment_distribution.positive ?? 0}
-                  neutral={analysis.sentiment_distribution.neutral ?? 0}
-                  negative={analysis.sentiment_distribution.negative ?? 0}
+            <div>
+              <div className="space-y-5">
+                <PlatformBar
+                  platform="chatgpt"
+                  score={scan.platform_scores.chatgpt}
+                  mentionRate={analysis.platform_performance?.chatgpt?.mention_rate}
+                  totalMentions={analysis.platform_performance?.chatgpt?.total_mentions}
+                  totalQueries={analysis.platform_performance?.chatgpt?.total_queries}
+                />
+                <PlatformBar
+                  platform="claude"
+                  score={scan.platform_scores.claude}
+                  mentionRate={analysis.platform_performance?.claude?.mention_rate}
+                  totalMentions={analysis.platform_performance?.claude?.total_mentions}
+                  totalQueries={analysis.platform_performance?.claude?.total_queries}
+                />
+                <PlatformBar
+                  platform="gemini"
+                  score={scan.platform_scores.gemini}
+                  mentionRate={analysis.platform_performance?.gemini?.mention_rate}
+                  totalMentions={analysis.platform_performance?.gemini?.total_mentions}
+                  totalQueries={analysis.platform_performance?.gemini?.total_queries}
+                />
+                <PlatformBar
+                  platform="perplexity"
+                  score={scan.platform_scores.perplexity}
+                  mentionRate={analysis.platform_performance?.perplexity?.mention_rate}
+                  totalMentions={analysis.platform_performance?.perplexity?.total_mentions}
+                  totalQueries={analysis.platform_performance?.perplexity?.total_queries}
                 />
               </div>
-            )}
+              {analysis.sentiment_distribution && (
+                <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
+                  <SentimentBar
+                    positive={analysis.sentiment_distribution.positive ?? 0}
+                    neutral={analysis.sentiment_distribution.neutral ?? 0}
+                    negative={analysis.sentiment_distribution.negative ?? 0}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
+
+        {analysis.top_competitors && analysis.top_competitors.length > 0 && (
+          <div className="mb-16">
+            <div className="flex items-center gap-1.5 mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Wettbewerber im Vergleich</h2>
+              <InfoTooltip text="Wie oft werden Ihre Wettbewerber in KI-Antworten zu den gleichen Fragen erwähnt?" />
+            </div>
+            <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-xl p-6 shadow-sm max-w-3xl">
+              {/* Own company first */}
+              <div className="mb-5 pb-5 border-b border-gray-100 dark:border-gray-800">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-teal-600 dark:text-teal-400">{company.name} (Sie)</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white tabular-nums">{analysis.total_mentions ?? 0} Erwähnungen</span>
+                </div>
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-teal-500 rounded-full transition-all" style={{ width: `${Math.min(((analysis.total_mentions ?? 0) / Math.max(analysis.total_queries ?? 1, 1)) * 100, 100)}%` }} />
+                </div>
+              </div>
+              {/* Competitors */}
+              <div className="space-y-3">
+                {analysis.top_competitors.slice(0, 8).map((c, i) => {
+                  const maxMentions = Math.max(analysis.total_mentions ?? 0, ...analysis.top_competitors.map(tc => tc.mentions));
+                  const widthPct = maxMentions > 0 ? (c.mentions / maxMentions) * 100 : 0;
+                  return (
+                    <div key={i}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{c.name}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 tabular-nums">{c.mentions}</span>
+                      </div>
+                      <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-gray-400 dark:bg-gray-500 rounded-full transition-all" style={{ width: `${widthPct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {scan.query_results && scan.query_results.length > 0 && (
+          <div className="mb-16">
+            <QueryTable queries={scan.query_results} />
+          </div>
+        )}
 
         <div className="mb-16">
           <div className="flex items-center gap-1.5 mb-6">
@@ -205,51 +245,6 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
             )}
           </div>
         </div>
-
-        {scan.query_results && scan.query_results.length > 0 && (
-          <div className="mb-16">
-            <QueryTable queries={scan.query_results} />
-          </div>
-        )}
-
-        {analysis.top_competitors && analysis.top_competitors.length > 0 && (
-          <div className="mb-16">
-            <div className="flex items-center gap-1.5 mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Wettbewerber im Vergleich</h2>
-              <InfoTooltip text="Wie oft werden Ihre Wettbewerber in KI-Antworten zu den gleichen Fragen erwähnt?" />
-            </div>
-            <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-xl p-6 shadow-sm max-w-3xl">
-              {/* Own company first */}
-              <div className="mb-5 pb-5 border-b border-gray-100 dark:border-gray-800">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-teal-600 dark:text-teal-400">{company.name} (Sie)</span>
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white tabular-nums">{analysis.total_mentions ?? 0} Erwähnungen</span>
-                </div>
-                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-teal-500 rounded-full transition-all" style={{ width: `${Math.min(((analysis.total_mentions ?? 0) / Math.max(analysis.total_queries ?? 1, 1)) * 100, 100)}%` }} />
-                </div>
-              </div>
-              {/* Competitors */}
-              <div className="space-y-3">
-                {analysis.top_competitors.slice(0, 8).map((c, i) => {
-                  const maxMentions = Math.max(analysis.total_mentions ?? 0, ...analysis.top_competitors.map(tc => tc.mentions));
-                  const widthPct = maxMentions > 0 ? (c.mentions / maxMentions) * 100 : 0;
-                  return (
-                    <div key={i}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{c.name}</span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400 tabular-nums">{c.mentions}</span>
-                      </div>
-                      <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-gray-400 dark:bg-gray-500 rounded-full transition-all" style={{ width: `${widthPct}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
 
         {recommendations && recommendations.length > 0 && (
           <div className="mb-16">
