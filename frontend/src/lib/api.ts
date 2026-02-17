@@ -41,20 +41,56 @@ export interface CompanyInfo {
   website?: string;
 }
 
+export interface QueryResult {
+  query: string;
+  category: string;
+  intent: string;
+  platform: string;
+  model: string;
+  response_text: string;
+  mentioned: boolean;
+  mention_type: string;
+  mention_count: number;
+  position: number | null;
+  context: string;
+  sentiment: string;
+  competitors_mentioned: string[];
+}
+
+export interface PlatformPerformance {
+  mention_rate: number;
+  total_queries: number;
+  total_mentions: number;
+}
+
+export interface ScanAnalysis {
+  total_queries: number;
+  total_mentions: number;
+  mention_rate: number;
+  avg_position: number | null;
+  sentiment_distribution: {
+    positive: number;
+    neutral: number;
+    negative: number;
+  };
+  strengths: string[];
+  weaknesses: string[];
+  opportunities: string[];
+  top_competitors: Array<{ name: string; mentions: number }>;
+  best_categories: string[];
+  worst_categories: string[];
+  platform_performance: Record<string, PlatformPerformance>;
+}
+
 export interface ScanInfo {
   id: string;
   overall_score: number;
   platform_scores: PlatformScores;
-  query_results?: unknown[];
-  analysis?: {
-    strengths?: string[];
-    weaknesses?: string[];
-    opportunities?: string[];
-  };
-  competitors?: Array<{
-    name: string;
-    mentions: number;
-  }>;
+  query_results: QueryResult[];
+  analysis: ScanAnalysis;
+  competitors?: Array<{ name: string; mentions: number }>;
+  started_at?: string;
+  completed_at?: string;
 }
 
 export interface ReportResponse {
