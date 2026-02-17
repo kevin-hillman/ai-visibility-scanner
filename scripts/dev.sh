@@ -14,8 +14,11 @@
 # - This script never kills processes.
 # - If a port is already in use, that service is skipped.
 # - To stop a server you started with this script, kill its pid manually:
-#     kill "$(cat .dev/backend.pid)"
-#     kill "$(cat .dev/frontend.pid)"
+#     kill "$(cat .dev/backend.pid)"   # verify with: ps -p "$(cat .dev/backend.pid)" -o command=
+#     kill "$(cat .dev/frontend.pid)"  # verify with: ps -p "$(cat .dev/frontend.pid)" -o command=
+#   If the pid files are stale, use lsof to find the listener and kill that pid:
+#     lsof -nP -iTCP:8000 -sTCP:LISTEN
+#     lsof -nP -iTCP:3000 -sTCP:LISTEN
 # - Logs are appended to:
 #     .dev/backend.log
 #     .dev/frontend.log
@@ -50,6 +53,16 @@ is_port_listening() {
 port_owner() {
   local port="$1"
   lsof -nP -iTCP:"$port" -sTCP:LISTEN 2>/dev/null | sed -n '1,5p' || true
+}
+
+pid_running() {
+  local pid="$1"
+  kill -0 "$pid" >/dev/null 2>&1
+}
+
+pid_command() {
+  local pid="$1"
+  ps -p "$pid" -o command= 2>/dev/null | sed 's/^ *//' || true
 }
 
 start_backend() {
@@ -107,17 +120,37 @@ show_status() {
 
   if is_port_listening "$BACKEND_PORT"; then
     print -r -- "backend: listening on :$BACKEND_PORT"
+    port_owner "$BACKEND_PORT" | sed 's/^/  /'
   else
     print -r -- "backend: not listening on :$BACKEND_PORT"
   fi
-  [[ -f "$BACKEND_PID" ]] && print -r -- "backend pid: $(<"$BACKEND_PID")"
+  if [[ -f "$BACKEND_PID" ]]; then
+    local backend_pid
+    backend_pid="$(<"$BACKEND_PID")"
+    if [[ -n "$backend_pid" ]] && pid_running "$backend_pid"; then
+      print -r -- "backend pid: $backend_pid"
+      print -r -- "  $(pid_command "$backend_pid")"
+    else
+      print -r -- "backend pid: $backend_pid (stale)"
+    fi
+  fi
 
   if is_port_listening "$FRONTEND_PORT"; then
     print -r -- "frontend: listening on :$FRONTEND_PORT"
+    port_owner "$FRONTEND_PORT" | sed 's/^/  /'
   else
     print -r -- "frontend: not listening on :$FRONTEND_PORT"
   fi
-  [[ -f "$FRONTEND_PID" ]] && print -r -- "frontend pid: $(<"$FRONTEND_PID")"
+  if [[ -f "$FRONTEND_PID" ]]; then
+    local frontend_pid
+    frontend_pid="$(<"$FRONTEND_PID")"
+    if [[ -n "$frontend_pid" ]] && pid_running "$frontend_pid"; then
+      print -r -- "frontend pid: $frontend_pid"
+      print -r -- "  $(pid_command "$frontend_pid")"
+    else
+      print -r -- "frontend pid: $frontend_pid (stale)"
+    fi
+  fi
 }
 
 tail_logs() {
