@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { platformColors, platformNames } from '@/lib/utils';
+import { platformColors, platformNames, platformTextColors } from '@/lib/utils';
 
 interface PlatformBarProps {
   platform: string;
@@ -20,34 +20,20 @@ export default function PlatformBar({ platform, score, maxScore = 100 }: Platfor
     return () => clearTimeout(timer);
   }, [percentage]);
 
-  const gradientClass = platformColors[platform] || 'from-gray-500 to-gray-600';
+  const bgClass = platformColors[platform] || 'bg-gray-500';
+  const textClass = platformTextColors[platform] || 'text-gray-600 dark:text-gray-400';
   const displayName = platformNames[platform] || platform;
 
   return (
     <div className="flex items-center gap-4">
-      {/* Platform name */}
-      <div className="w-28 text-right">
-        <span className="text-white font-medium">{displayName}</span>
+      <div className="w-24 text-right">
+        <span className={`font-medium text-sm ${textClass}`}>{displayName}</span>
       </div>
-
-      {/* Bar container */}
-      <div className="flex-1 bg-white/5 rounded-full h-8 relative overflow-hidden border border-white/10">
-        {/* Animated bar */}
-        <div
-          className={`h-full bg-gradient-to-r ${gradientClass} rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-3`}
-          style={{ width: `${animatedWidth}%` }}
-        >
-          {animatedWidth > 20 && (
-            <span className="text-white text-sm font-semibold">{score}</span>
-          )}
-        </div>
+      <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-3 relative overflow-hidden">
+        <div className={`h-full ${bgClass} rounded-full transition-all duration-1000 ease-out`} style={{ width: `${animatedWidth}%` }} />
       </div>
-
-      {/* Score number (outside bar if bar is too small) */}
-      <div className="w-12 text-left">
-        {animatedWidth <= 20 && (
-          <span className="text-white text-sm font-semibold">{score}</span>
-        )}
+      <div className="w-10 text-right">
+        <span className="text-sm font-semibold text-gray-900 dark:text-white tabular-nums">{score}</span>
       </div>
     </div>
   );
