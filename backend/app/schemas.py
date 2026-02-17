@@ -142,6 +142,20 @@ class ScanCostDetail(BaseModel):
     calls: list[ApiCallCostResponse]
 
 
+class ScanCostListEntry(BaseModel):
+    scan_id: str
+    company_name: str
+    company_domain: str
+    status: str
+    total_cost_usd: float
+    total_tokens: int
+    total_calls: int
+    platform_breakdown: dict[str, float]
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    query_version: str | None = None
+
+
 class PlatformCostBreakdown(BaseModel):
     platform: str
     total_cost_usd: float

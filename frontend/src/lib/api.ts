@@ -204,6 +204,20 @@ export interface BudgetInfo {
   utilization: number;
 }
 
+export interface ScanCostListEntry {
+  scan_id: string;
+  company_name: string;
+  company_domain: string;
+  status: string;
+  total_cost_usd: number;
+  total_tokens: number;
+  total_calls: number;
+  platform_breakdown: Record<string, number>;
+  started_at: string | null;
+  completed_at: string | null;
+  query_version: string | null;
+}
+
 // --- Cost API Functions ---
 
 export async function fetchCostSummary(month?: string): Promise<CostSummary> {
@@ -244,5 +258,12 @@ export async function updateBudget(budgetUsd: number, warningThreshold: number =
     body: JSON.stringify({ budget_usd: budgetUsd, warning_threshold: warningThreshold }),
   });
   if (!response.ok) throw new Error(`Failed to update budget: ${response.statusText}`);
+  return response.json();
+}
+
+export async function fetchScanCostList(month?: string): Promise<ScanCostListEntry[]> {
+  const params = month ? `?month=${month}` : '';
+  const response = await fetch(`${API_BASE}/costs/scans${params}`);
+  if (!response.ok) throw new Error(`Failed to fetch scan costs: ${response.statusText}`);
   return response.json();
 }

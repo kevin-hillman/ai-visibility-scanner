@@ -12,12 +12,69 @@ from app.models import ApiCallCost, CostBudget, Scan, Company
 from app.schemas import (
     CostSummary,
     ScanCostDetail,
+    ScanCostListEntry,
     PlatformCostBreakdown,
     BudgetResponse,
     BudgetUpdate,
 )
 
 router = APIRouter()
+
+
+@router.get("/scans", response_model=list[ScanCostListEntry])
+def get_scan_cost_list(
+    month: str = Query(default=None, description="Format: YYYY-MM"),
+    db: Session = Depends(get_db),
+):
+    """Liste aller Scans mit Kostenzusammenfassung."""
+    if not month:
+        month = datetime.now(timezone.utc).strftime("%Y-%m")
+
+    year, m = month.split("-")
+    month_start = datetime(int(year), int(m), 1, tzinfo=timezone.utc)
+    if int(m) == 12:
+        month_end = datetime(int(year) + 1, 1, 1, tzinfo=timezone.utc)
+    else:
+        month_end = datetime(int(year), int(m) + 1, 1, tzinfo=timezone.utc)
+
+    scans = (
+        db.query(Scan)
+        .join(Company, Scan.company_id == Company.id)
+        .filter(Scan.started_at >= month_start, Scan.started_at < month_end)
+        .order_by(Scan.started_at.desc())
+        .all()
+    )
+
+    result = []
+    for scan in scans:
+        company = db.query(Company).filter(Company.id == scan.company_id).first()
+
+        cost_agg = db.query(
+            func.sum(ApiCallCost.cost_usd),
+            func.sum(ApiCallCost.total_tokens),
+            func.count(ApiCallCost.id),
+        ).filter(ApiCallCost.scan_id == scan.id).first()
+
+        platform_rows = db.query(
+            ApiCallCost.platform,
+            func.sum(ApiCallCost.cost_usd),
+        ).filter(ApiCallCost.scan_id == scan.id).group_by(ApiCallCost.platform).all()
+
+        result.append(ScanCostListEntry(
+            scan_id=scan.id,
+            company_name=company.name if company else "Unbekannt",
+            company_domain=company.domain if company else "",
+            status=scan.status,
+            total_cost_usd=round(cost_agg[0] or 0.0, 6),
+            total_tokens=int(cost_agg[1] or 0),
+            total_calls=cost_agg[2] or 0,
+            platform_breakdown={row[0]: round(row[1], 6) for row in platform_rows},
+            started_at=scan.started_at,
+            completed_at=scan.completed_at,
+            query_version=scan.query_version,
+        ))
+
+    return result
 
 
 @router.get("/summary", response_model=CostSummary)
