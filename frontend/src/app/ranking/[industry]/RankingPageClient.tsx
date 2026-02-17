@@ -58,6 +58,10 @@ export default function RankingPageClient({ industry, initialRanking, initialErr
               <span className="inline-flex items-center bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full px-3 py-1 text-sm">4 Plattformen</span>
             </div>
           )}
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-4 max-w-2xl leading-relaxed">
+            Basierend auf automatisierten Analysen über ChatGPT, Claude, Gemini und Perplexity.
+            Jedes Unternehmen wird mit branchenspezifischen Fragen getestet und nach KI-Sichtbarkeit bewertet.
+          </p>
         </div>
 
         {ranking ? (

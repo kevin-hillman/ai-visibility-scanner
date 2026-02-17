@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Fragment, useMemo, useState } from 'react';
 import type { RankingEntry } from '@/lib/api';
-import { getRankBadgeColor } from '@/lib/utils';
+import { getRankBadgeColor, getScoreLabel } from '@/lib/utils';
 
 type RankingListProps = {
   entries: RankingEntry[];
@@ -23,7 +23,7 @@ function ScoreBlock({ score }: { score: number }) {
       <div className={`text-2xl sm:text-3xl font-semibold tracking-tight tabular-nums ${colorClass}`}>
         {safeScore.toFixed(1)}
       </div>
-      <div className="mt-2 text-[10px] uppercase tracking-[0.24em] text-gray-400">Score</div>
+      <div className="mt-2 text-[10px] uppercase tracking-[0.24em] text-gray-400">{getScoreLabel(safeScore)}</div>
     </div>
   );
 }
@@ -82,6 +82,18 @@ function RankingCard({ entry, onRequestScan }: { entry: RankingEntry; onRequestS
               </div>
             )}
             <div className="mt-0.5 text-sm text-gray-500 dark:text-gray-400 truncate">{entry.domain}</div>
+            <div className="flex items-center gap-3 mt-1.5">
+              {(['chatgpt', 'claude', 'gemini', 'perplexity'] as const).map((p) => {
+                const s = entry.platform_scores?.[p] ?? 0;
+                const abbr = p === 'chatgpt' ? 'GPT' : p === 'claude' ? 'CL' : p === 'gemini' ? 'GEM' : 'PPX';
+                const color = s >= 70 ? 'text-emerald-600 dark:text-emerald-400' : s >= 40 ? 'text-yellow-600 dark:text-yellow-400' : 'text-rose-600 dark:text-rose-400';
+                return (
+                  <span key={p} className="text-xs text-gray-400">
+                    {abbr} <span className={`font-semibold tabular-nums ${color}`}>{s.toFixed(0)}</span>
+                  </span>
+                );
+              })}
+            </div>
           </div>
         </div>
 
