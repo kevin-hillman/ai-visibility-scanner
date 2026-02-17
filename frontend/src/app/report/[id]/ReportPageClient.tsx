@@ -7,6 +7,7 @@ import PlatformBar from '@/components/PlatformBar';
 import RecommendationCard from '@/components/RecommendationCard';
 import LeadForm from '@/components/LeadForm';
 import KpiCard from '@/components/KpiCard';
+import SentimentBar from '@/components/SentimentBar';
 
 type ReportPageClientProps = {
   scanId: string;
@@ -101,11 +102,44 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Performance nach Plattform</h2>
           <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-xl p-6 shadow-sm">
             <div className="space-y-5">
-              <PlatformBar platform="chatgpt" score={scan.platform_scores.chatgpt} />
-              <PlatformBar platform="claude" score={scan.platform_scores.claude} />
-              <PlatformBar platform="gemini" score={scan.platform_scores.gemini} />
-              <PlatformBar platform="perplexity" score={scan.platform_scores.perplexity} />
+              <PlatformBar
+                platform="chatgpt"
+                score={scan.platform_scores.chatgpt}
+                mentionRate={analysis.platform_performance?.chatgpt?.mention_rate}
+                totalMentions={analysis.platform_performance?.chatgpt?.total_mentions}
+                totalQueries={analysis.platform_performance?.chatgpt?.total_queries}
+              />
+              <PlatformBar
+                platform="claude"
+                score={scan.platform_scores.claude}
+                mentionRate={analysis.platform_performance?.claude?.mention_rate}
+                totalMentions={analysis.platform_performance?.claude?.total_mentions}
+                totalQueries={analysis.platform_performance?.claude?.total_queries}
+              />
+              <PlatformBar
+                platform="gemini"
+                score={scan.platform_scores.gemini}
+                mentionRate={analysis.platform_performance?.gemini?.mention_rate}
+                totalMentions={analysis.platform_performance?.gemini?.total_mentions}
+                totalQueries={analysis.platform_performance?.gemini?.total_queries}
+              />
+              <PlatformBar
+                platform="perplexity"
+                score={scan.platform_scores.perplexity}
+                mentionRate={analysis.platform_performance?.perplexity?.mention_rate}
+                totalMentions={analysis.platform_performance?.perplexity?.total_mentions}
+                totalQueries={analysis.platform_performance?.perplexity?.total_queries}
+              />
             </div>
+            {analysis.sentiment_distribution && (
+              <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
+                <SentimentBar
+                  positive={analysis.sentiment_distribution.positive ?? 0}
+                  neutral={analysis.sentiment_distribution.neutral ?? 0}
+                  negative={analysis.sentiment_distribution.negative ?? 0}
+                />
+              </div>
+            )}
           </div>
         </div>
 
