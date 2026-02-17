@@ -2,19 +2,23 @@
 Scan Worker.
 Orchestriert den kompletten Scan-Workflow für eine Company.
 """
+import logging
 from datetime import datetime
 from typing import List, Dict, Any
 
 from sqlalchemy.orm import Session
 
-from app.models import Scan, Company
+from app.models import Scan, Company, ApiCallCost, CostBudget
 from app.config import Settings
 from app.services.query_generator import QueryGenerator
 from app.services.llm_client import LLMClient
 from app.services.analyzer import Analyzer
 from app.services.scorer import Scorer
 from app.services.report_generator import ReportGenerator
+from app.services.cost_calculator import CostCalculator
 from app.api.industries import load_industry_config
+
+logger = logging.getLogger(__name__)
 
 
 async def run_scan(scan_id: str, db: Session, settings: Settings) -> None:
@@ -67,6 +71,7 @@ async def run_scan(scan_id: str, db: Session, settings: Settings) -> None:
 
         # 5. LLMs abfragen
         llm_client = LLMClient(settings)
+        cost_calculator = CostCalculator()
         all_results: List[Dict[str, Any]] = []
         analyzer = Analyzer()
 
@@ -90,7 +95,26 @@ async def run_scan(scan_id: str, db: Session, settings: Settings) -> None:
                 response_text = platform_response.get("response_text", "")
                 model_used = platform_response.get("model", "unknown")
 
-                # Skip failed responses
+                # Kosten erfassen (auch für fehlgeschlagene Calls)
+                api_cost = ApiCallCost(
+                    scan_id=scan_id,
+                    platform=platform,
+                    model=model_used,
+                    query=query_text,
+                    input_tokens=platform_response.get("input_tokens", 0),
+                    output_tokens=platform_response.get("output_tokens", 0),
+                    total_tokens=platform_response.get("total_tokens", 0),
+                    cost_usd=cost_calculator.calculate_cost(
+                        model=model_used,
+                        input_tokens=platform_response.get("input_tokens", 0),
+                        output_tokens=platform_response.get("output_tokens", 0),
+                    ),
+                    latency_ms=platform_response.get("latency_ms", 0),
+                    success=platform_response.get("success", False),
+                )
+                db.add(api_cost)
+
+                # Skip failed responses for analysis
                 if not platform_response.get("success", False):
                     continue
 
@@ -168,6 +192,20 @@ async def run_scan(scan_id: str, db: Session, settings: Settings) -> None:
         scan.analysis = aggregated_analysis
         scan.recommendations = recommendations
         scan.report_html = report_html
+
+        # Kosten aggregieren
+        from sqlalchemy import func
+        cost_totals = db.query(
+            func.sum(ApiCallCost.cost_usd),
+            func.sum(ApiCallCost.total_tokens),
+        ).filter(ApiCallCost.scan_id == scan_id).first()
+
+        scan.total_cost_usd = cost_totals[0] or 0.0
+        scan.total_tokens_used = int(cost_totals[1] or 0)
+
+        # Budget-Warnung prüfen
+        _check_budget_warning(db)
+
         scan.status = "completed"
         scan.completed_at = datetime.utcnow()
         scan.error_message = None
@@ -181,3 +219,26 @@ async def run_scan(scan_id: str, db: Session, settings: Settings) -> None:
         scan.completed_at = datetime.utcnow()
         db.commit()
         raise
+
+
+def _check_budget_warning(db: Session) -> None:
+    """Prüft ob Monatsbudget-Schwelle überschritten ist und loggt Warnung."""
+    from sqlalchemy import func
+
+    now = datetime.utcnow()
+    current_month = now.strftime("%Y-%m")
+
+    budget = db.query(CostBudget).filter(CostBudget.month == current_month).first()
+    if not budget:
+        return
+
+    month_total = db.query(func.sum(ApiCallCost.cost_usd)).filter(
+        ApiCallCost.created_at >= now.replace(day=1, hour=0, minute=0, second=0)
+    ).scalar() or 0.0
+
+    ratio = month_total / budget.budget_usd if budget.budget_usd > 0 else 0
+    if ratio >= budget.warning_threshold:
+        logger.warning(
+            f"BUDGET-WARNUNG: {ratio:.0%} des Monatsbudgets verbraucht "
+            f"(${month_total:.4f} / ${budget.budget_usd:.2f})"
+        )

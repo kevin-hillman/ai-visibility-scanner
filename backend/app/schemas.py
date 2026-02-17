@@ -101,3 +101,66 @@ class IndustryInfo(BaseModel):
     description: str
     total_companies: int
     avg_score: float | None = None
+
+
+# --- Cost Tracking Schemas ---
+
+class ApiCallCostResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    scan_id: str
+    platform: str
+    model: str
+    query: str
+    input_tokens: int
+    output_tokens: int
+    total_tokens: int
+    cost_usd: float
+    latency_ms: int
+    success: bool
+    created_at: datetime
+
+
+class CostSummary(BaseModel):
+    month: str
+    total_cost_usd: float
+    total_tokens: int
+    total_calls: int
+    avg_cost_per_scan: float
+    platform_breakdown: dict[str, float]
+    daily_costs: list[dict[str, float]]
+
+
+class ScanCostDetail(BaseModel):
+    scan_id: str
+    company_name: str
+    total_cost_usd: float
+    total_tokens: int
+    total_calls: int
+    platform_breakdown: dict[str, float]
+    calls: list[ApiCallCostResponse]
+
+
+class PlatformCostBreakdown(BaseModel):
+    platform: str
+    total_cost_usd: float
+    total_tokens: int
+    total_calls: int
+    avg_cost_per_call: float
+
+
+class BudgetResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    month: str
+    budget_usd: float
+    warning_threshold: float
+    spent_usd: float
+    remaining_usd: float
+    utilization: float
+
+
+class BudgetUpdate(BaseModel):
+    budget_usd: float
+    warning_threshold: float = 0.8

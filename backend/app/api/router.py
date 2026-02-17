@@ -1,10 +1,10 @@
 """
 Haupt-Router für die GEO Intelligence Engine API.
-Inkludiert alle Sub-Router für Companies, Scans, Rankings, Reports, Leads und Industries.
+Inkludiert alle Sub-Router für Companies, Scans, Rankings, Reports, Leads, Industries und Costs.
 """
 from fastapi import APIRouter
 
-from app.api import companies, scans, rankings, reports, leads, industries
+from app.api import companies, scans, rankings, reports, leads, industries, costs
 
 router = APIRouter()
 
@@ -43,4 +43,10 @@ router.include_router(
     industries.router,
     prefix="/industries",
     tags=["industries"]
+)
+
+router.include_router(
+    costs.router,
+    prefix="/costs",
+    tags=["costs"]
 )

@@ -62,13 +62,13 @@ class LLMClient:
 
         try:
             if platform == "chatgpt":
-                response_text = await self._query_chatgpt(query, model)
+                response_text, usage = await self._query_chatgpt(query, model)
             elif platform == "claude":
-                response_text = await self._query_claude(query, model)
+                response_text, usage = await self._query_claude(query, model)
             elif platform == "gemini":
-                response_text = await self._query_gemini(query, model)
+                response_text, usage = await self._query_gemini(query, model)
             elif platform == "perplexity":
-                response_text = await self._query_perplexity(query, model)
+                response_text, usage = await self._query_perplexity(query, model)
             else:
                 raise ValueError(f"Unbekannte Plattform: {platform}")
 
@@ -82,6 +82,9 @@ class LLMClient:
                 "success": True,
                 "error": None,
                 "latency_ms": latency_ms,
+                "input_tokens": usage.get("input_tokens", 0),
+                "output_tokens": usage.get("output_tokens", 0),
+                "total_tokens": usage.get("total_tokens", 0),
             }
 
         except Exception as e:
@@ -95,6 +98,9 @@ class LLMClient:
                 "success": False,
                 "error": str(e),
                 "latency_ms": latency_ms,
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "total_tokens": 0,
             }
 
     async def query_all_platforms(
@@ -178,7 +184,7 @@ class LLMClient:
             return bool(self.perplexity_api_key)
         return False
 
-    async def _query_chatgpt(self, query: str, model: str) -> str:
+    async def _query_chatgpt(self, query: str, model: str) -> tuple[str, dict[str, int]]:
         """
         Query an OpenAI ChatGPT.
 
@@ -187,7 +193,7 @@ class LLMClient:
             model: Model-ID (z.B. "gpt-4o")
 
         Returns:
-            Response-Text
+            Tuple aus Response-Text und Token-Usage-Dict
         """
         if not self.openai_client:
             raise ValueError("OpenAI API Key nicht konfiguriert")
@@ -202,9 +208,17 @@ class LLMClient:
             max_tokens=1000,
         )
 
-        return response.choices[0].message.content or ""
+        usage = {}
+        if response.usage:
+            usage = {
+                "input_tokens": response.usage.prompt_tokens,
+                "output_tokens": response.usage.completion_tokens,
+                "total_tokens": response.usage.total_tokens,
+            }
 
-    async def _query_claude(self, query: str, model: str) -> str:
+        return response.choices[0].message.content or "", usage
+
+    async def _query_claude(self, query: str, model: str) -> tuple[str, dict[str, int]]:
         """
         Query an Anthropic Claude.
 
@@ -213,7 +227,7 @@ class LLMClient:
             model: Model-ID (z.B. "claude-sonnet-4-5-20250929")
 
         Returns:
-            Response-Text
+            Tuple aus Response-Text und Token-Usage-Dict
         """
         if not self.anthropic_client:
             raise ValueError("Anthropic API Key nicht konfiguriert")
@@ -227,15 +241,20 @@ class LLMClient:
             ],
         )
 
-        # Extrahiere Text aus Content-Blocks
         text_blocks = [
             block.text for block in message.content
             if hasattr(block, "text")
         ]
 
-        return " ".join(text_blocks)
+        usage = {
+            "input_tokens": message.usage.input_tokens,
+            "output_tokens": message.usage.output_tokens,
+            "total_tokens": message.usage.input_tokens + message.usage.output_tokens,
+        }
 
-    async def _query_gemini(self, query: str, model: str) -> str:
+        return " ".join(text_blocks), usage
+
+    async def _query_gemini(self, query: str, model: str) -> tuple[str, dict[str, int]]:
         """
         Query an Google Gemini.
 
@@ -244,24 +263,34 @@ class LLMClient:
             model: Model-ID (z.B. "gemini-2.0-flash")
 
         Returns:
-            Response-Text
+            Tuple aus Response-Text und Token-Usage-Dict
         """
         if not self.settings.GOOGLE_API_KEY:
             raise ValueError("Google API Key nicht konfiguriert")
 
-        # Gemini SDK ist sync - in executor wrappen
         loop = asyncio.get_event_loop()
 
         def sync_query():
             gemini_model = genai.GenerativeModel(model)
             full_prompt = f"{self.system_prompt}\n\n{query}"
             response = gemini_model.generate_content(full_prompt)
-            return response.text
 
-        response_text = await loop.run_in_executor(None, sync_query)
-        return response_text
+            usage = {}
+            if hasattr(response, "usage_metadata") and response.usage_metadata:
+                meta = response.usage_metadata
+                input_t = getattr(meta, "prompt_token_count", 0) or 0
+                output_t = getattr(meta, "candidates_token_count", 0) or 0
+                usage = {
+                    "input_tokens": input_t,
+                    "output_tokens": output_t,
+                    "total_tokens": input_t + output_t,
+                }
 
-    async def _query_perplexity(self, query: str, model: str) -> str:
+            return response.text, usage
+
+        return await loop.run_in_executor(None, sync_query)
+
+    async def _query_perplexity(self, query: str, model: str) -> tuple[str, dict[str, int]]:
         """
         Query an Perplexity AI.
 
@@ -270,7 +299,7 @@ class LLMClient:
             model: Model-ID (z.B. "sonar")
 
         Returns:
-            Response-Text
+            Tuple aus Response-Text und Token-Usage-Dict
         """
         if not self.perplexity_api_key:
             raise ValueError("Perplexity API Key nicht konfiguriert")
@@ -297,4 +326,14 @@ class LLMClient:
             response.raise_for_status()
 
             data = response.json()
-            return data["choices"][0]["message"]["content"]
+            text = data["choices"][0]["message"]["content"]
+
+            usage = {}
+            if "usage" in data:
+                usage = {
+                    "input_tokens": data["usage"].get("prompt_tokens", 0),
+                    "output_tokens": data["usage"].get("completion_tokens", 0),
+                    "total_tokens": data["usage"].get("total_tokens", 0),
+                }
+
+            return text, usage
