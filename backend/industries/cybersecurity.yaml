@@ -8,13 +8,13 @@ region: DACH
 platforms:
   chatgpt:
     weight: 0.35
-    model: "gpt-4o"
+    model: "gpt-4.1"
   claude:
     weight: 0.35
     model: "claude-sonnet-4-5-20250929"
   gemini:
     weight: 0.30
-    model: "gemini-2.0-flash"
+    model: "gemini-2.5-flash"
 
 scoring:
   mention_types:
