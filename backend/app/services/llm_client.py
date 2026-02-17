@@ -5,7 +5,7 @@ from typing import Any
 import httpx
 from openai import AsyncOpenAI
 from anthropic import AsyncAnthropic
-import google.generativeai as genai
+from google import genai
 
 from app.config import Settings
 
@@ -28,9 +28,8 @@ class LLMClient:
         # Anthropic Client
         self.anthropic_client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY) if settings.ANTHROPIC_API_KEY else None
 
-        # Google Gemini (sync API, wird in executor wrapped)
-        if settings.GOOGLE_API_KEY:
-            genai.configure(api_key=settings.GOOGLE_API_KEY)
+        # Google Gemini
+        self.gemini_client = genai.Client(api_key=settings.GOOGLE_API_KEY) if settings.GOOGLE_API_KEY else None
 
         # Perplexity (HTTP Client)
         self.perplexity_api_key = settings.PERPLEXITY_API_KEY
@@ -265,25 +264,24 @@ class LLMClient:
         Returns:
             Tuple aus Response-Text und Token-Usage-Dict
         """
-        if not self.settings.GOOGLE_API_KEY:
+        if not self.gemini_client:
             raise ValueError("Google API Key nicht konfiguriert")
 
         loop = asyncio.get_event_loop()
 
         def sync_query():
-            gemini_model = genai.GenerativeModel(model)
             full_prompt = f"{self.system_prompt}\n\n{query}"
-            response = gemini_model.generate_content(full_prompt)
+            response = self.gemini_client.models.generate_content(
+                model=model,
+                contents=full_prompt,
+            )
 
             usage = {}
-            if hasattr(response, "usage_metadata") and response.usage_metadata:
-                meta = response.usage_metadata
-                input_t = getattr(meta, "prompt_token_count", 0) or 0
-                output_t = getattr(meta, "candidates_token_count", 0) or 0
+            if response.usage_metadata:
                 usage = {
-                    "input_tokens": input_t,
-                    "output_tokens": output_t,
-                    "total_tokens": input_t + output_t,
+                    "input_tokens": response.usage_metadata.prompt_token_count or 0,
+                    "output_tokens": response.usage_metadata.candidates_token_count or 0,
+                    "total_tokens": response.usage_metadata.total_token_count or 0,
                 }
 
             return response.text, usage

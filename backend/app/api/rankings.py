@@ -60,15 +60,45 @@ def get_industry_ranking(
     ranking_data = []
     last_updated = None
 
+    # Aktuelle Query-Version ermitteln (die am häufigsten bei completed Scans vorkommt)
+    from sqlalchemy import func
+    latest_version_row = (
+        db.query(Scan.query_version, func.count(Scan.id))
+        .filter(Scan.industry_id == industry_id)
+        .filter(Scan.status == "completed")
+        .filter(Scan.query_version.isnot(None))
+        .group_by(Scan.query_version)
+        .order_by(func.count(Scan.id).desc())
+        .first()
+    )
+    current_version = latest_version_row[0] if latest_version_row else None
+
     for company in companies:
-        # Neuesten completed Scan holen
-        latest_scan = (
+        # Neuesten completed Scan holen, bevorzugt mit aktueller query_version
+        scan_query = (
             db.query(Scan)
             .filter(Scan.company_id == company.id)
             .filter(Scan.status == "completed")
-            .order_by(desc(Scan.completed_at))
-            .first()
         )
+
+        if current_version:
+            # Erst nach Scan mit aktueller Version suchen
+            latest_scan = (
+                scan_query
+                .filter(Scan.query_version == current_version)
+                .order_by(desc(Scan.completed_at))
+                .first()
+            )
+        else:
+            latest_scan = None
+
+        # Fallback: beliebiger completed Scan
+        if not latest_scan:
+            latest_scan = (
+                scan_query
+                .order_by(desc(Scan.completed_at))
+                .first()
+            )
 
         if latest_scan and latest_scan.overall_score is not None:
             ranking_data.append({
@@ -78,7 +108,8 @@ def get_industry_ranking(
                 "overall_score": latest_scan.overall_score,
                 "platform_scores": normalize_platform_scores(latest_scan.platform_scores),
                 "industry_id": company.industry_id,
-                "completed_at": latest_scan.completed_at
+                "completed_at": latest_scan.completed_at,
+                "query_version": latest_scan.query_version,
             })
 
             # Last updated tracken
