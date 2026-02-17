@@ -8,6 +8,7 @@ import RecommendationCard from '@/components/RecommendationCard';
 import LeadForm from '@/components/LeadForm';
 import KpiCard from '@/components/KpiCard';
 import SentimentBar from '@/components/SentimentBar';
+import QueryTable from '@/components/QueryTable';
 
 type ReportPageClientProps = {
   scanId: string;
@@ -193,6 +194,12 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
             )}
           </div>
         </div>
+
+        {scan.query_results && scan.query_results.length > 0 && (
+          <div className="mb-16">
+            <QueryTable queries={scan.query_results} />
+          </div>
+        )}
 
         {scan.competitors && scan.competitors.length > 0 && (
           <div className="mb-16">
