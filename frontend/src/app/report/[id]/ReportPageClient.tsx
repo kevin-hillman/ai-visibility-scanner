@@ -25,7 +25,7 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
           <div className="mb-10">
             <Link href="/" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors text-sm">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-              Zurueck zur Startseite
+              Zurück zur Startseite
             </Link>
           </div>
           <div className="rounded-xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 p-8 text-center">
@@ -203,7 +203,7 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
                 <div className="px-6 py-3 bg-emerald-50 dark:bg-emerald-900/20 border-b border-emerald-200 dark:border-emerald-800">
                   <div className="flex items-center gap-2">
                     <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <h3 className="font-semibold text-emerald-800 dark:text-emerald-300">Staerken</h3>
+                    <h3 className="font-semibold text-emerald-800 dark:text-emerald-300">Stärken</h3>
                   </div>
                 </div>
                 <ul className="p-6 space-y-3">
@@ -218,7 +218,7 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
                 <div className="px-6 py-3 bg-rose-50 dark:bg-rose-900/20 border-b border-rose-200 dark:border-rose-800">
                   <div className="flex items-center gap-2">
                     <svg className="w-5 h-5 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <h3 className="font-semibold text-rose-800 dark:text-rose-300">Schwaechen</h3>
+                    <h3 className="font-semibold text-rose-800 dark:text-rose-300">Schwächen</h3>
                   </div>
                 </div>
                 <ul className="p-6 space-y-3">
@@ -261,7 +261,7 @@ export default function ReportPageClient({ scanId, initialReport, initialError }
         <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-2xl p-8 lg:p-12 shadow-sm">
           <div className="max-w-3xl mx-auto text-center mb-8">
             <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-white mb-3">KI-Sichtbarkeit verbessern?</h2>
-            <p className="text-gray-600 dark:text-gray-400">Unsere GEO-Experten entwickeln mit Ihnen eine massgeschneiderte Strategie.</p>
+            <p className="text-gray-600 dark:text-gray-400">Unsere GEO-Experten entwickeln mit Ihnen eine maßgeschneiderte Strategie.</p>
           </div>
           <div className="max-w-2xl mx-auto"><LeadForm sourcePage={`/report/${scanId}`} /></div>
         </div>

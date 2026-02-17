@@ -102,7 +102,7 @@ function RankingCard({ entry, onRequestScan }: { entry: RankingEntry; onRequestS
           {reportHref ? (
             <Link href={reportHref}
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              aria-label={`Report oeffnen fuer ${entry.company_name}`}>
+              aria-label={`Report öffnen für ${entry.company_name}`}>
               Report
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -111,7 +111,7 @@ function RankingCard({ entry, onRequestScan }: { entry: RankingEntry; onRequestS
           ) : (
             <button type="button" onClick={() => onRequestScan({ company_name: entry.company_name, domain: entry.domain })}
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-600 hover:bg-teal-700 px-4 py-2.5 font-medium text-white transition-colors"
-              aria-label={`Scan anfordern fuer ${entry.company_name}`}>
+              aria-label={`Scan anfordern für ${entry.company_name}`}>
               Scan anfordern
             </button>
           )}

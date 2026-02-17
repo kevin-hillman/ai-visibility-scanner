@@ -14,7 +14,7 @@ export default function Footer() {
             <span className="text-sm text-gray-500 dark:text-gray-400">KI-Sichtbarkeit messen</span>
           </div>
 
-          <div className="flex items-center space-x-6 text-sm">
+          <div className="flex items-center gap-6 text-sm">
             <Link href="/datenschutz" className="text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Datenschutz</Link>
             <Link href="/impressum" className="text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Impressum</Link>
             <Link href="/agb" className="text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">AGB</Link>

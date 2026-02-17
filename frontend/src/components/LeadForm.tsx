@@ -121,7 +121,7 @@ export default function LeadForm({ industryId, sourcePage, prefill }: LeadFormPr
       </button>
 
       <p className="text-xs text-gray-400 text-center">
-        Mit dem Absenden stimmen Sie unserer Datenschutzerklaerung zu.
+        Mit dem Absenden stimmen Sie unserer Datenschutzerklärung zu.
       </p>
     </form>
   );

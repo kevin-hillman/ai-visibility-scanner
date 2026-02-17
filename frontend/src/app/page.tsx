@@ -9,9 +9,9 @@ function HeroRankingPreview() {
   ];
 
   return (
-    <div className="relative">
+    <div className="relative max-w-md mx-auto">
       <div className="absolute -inset-4 bg-teal-400/20 dark:bg-teal-400/10 rounded-3xl blur-3xl" />
-      <div className="relative bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-2xl shadow-xl rotate-1 p-5">
+      <div className="relative bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-2xl shadow-xl p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="text-sm font-semibold text-gray-900 dark:text-white">Cybersecurity Ranking</div>
           <div className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-full px-2.5 py-1">Live</div>
@@ -47,7 +47,7 @@ function HeroRankingPreview() {
 export default function Home() {
   return (
     <div>
-      <section className="relative overflow-hidden dot-grid">
+      <section className="relative dot-grid">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div>
@@ -56,7 +56,7 @@ export default function Home() {
                 Wie sichtbar ist Ihr Unternehmen in KI-Chatbots?
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-lg leading-relaxed">
-                Messen Sie Ihre GEO-Performance in ChatGPT, Claude, Gemini und Perplexity. Entdecken Sie ungenutztes Potenzial und ueberholen Sie Ihre Wettbewerber.
+                Messen Sie Ihre GEO-Performance in ChatGPT, Claude, Gemini und Perplexity. Entdecken Sie ungenutztes Potenzial und überholen Sie Ihre Wettbewerber.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link href="/ranking/cybersecurity" className="px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-medium rounded-lg transition-all text-center">
@@ -69,7 +69,7 @@ export default function Home() {
               </div>
               <p className="mt-6 text-sm text-gray-400">500+ Unternehmen analysiert</p>
             </div>
-            <div className="hidden lg:block"><HeroRankingPreview /></div>
+            <div className="hidden lg:block p-6"><HeroRankingPreview /></div>
           </div>
         </div>
       </section>
@@ -80,14 +80,14 @@ export default function Home() {
             <div className="text-sm font-medium text-teal-600 dark:text-teal-400 tracking-wide uppercase mb-3">Warum GEO?</div>
             <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900 dark:text-white mb-6">Was ist Generative Engine Optimization?</h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-              Waehrend SEO fuer Google optimiert, fokussiert sich GEO auf KI-gestuetzte Antwortmaschinen wie ChatGPT, Claude, Gemini und Perplexity.
+              Während SEO für Google optimiert, fokussiert sich GEO auf KI-gestützte Antwortmaschinen wie ChatGPT, Claude, Gemini und Perplexity.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>, title: 'Messbare Ergebnisse', desc: 'Objektive Scores ueber 4 fuehrende KI-Plattformen. Vergleichen Sie sich mit Wettbewerbern.' },
-              { icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>, title: 'Konkrete Empfehlungen', desc: 'Keine vagen Tipps. Wir zeigen Ihnen exakt, wo Sie ansetzen muessen.' },
-              { icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, title: 'Zukunftssicher', desc: '40% aller Suchanfragen werden bereits ueber KI-Chatbots gestellt. Trend steigend.' },
+              { icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>, title: 'Messbare Ergebnisse', desc: 'Objektive Scores über 4 führende KI-Plattformen. Vergleichen Sie sich mit Wettbewerbern.' },
+              { icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>, title: 'Konkrete Empfehlungen', desc: 'Keine vagen Tipps. Wir zeigen Ihnen exakt, wo Sie ansetzen müssen.' },
+              { icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, title: 'Zukunftssicher', desc: '40% aller Suchanfragen werden bereits über KI-Chatbots gestellt. Trend steigend.' },
             ].map((f) => (
               <div key={f.title} className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2e3039] rounded-xl p-6 hover:shadow-md transition-shadow">
                 <div className="w-10 h-10 bg-teal-50 dark:bg-teal-900/20 rounded-lg flex items-center justify-center text-teal-600 dark:text-teal-400 mb-4">{f.icon}</div>
@@ -114,8 +114,8 @@ export default function Home() {
 
       <section id="contact" className="py-20 border-t border-gray-200 dark:border-[#2e3039]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900 dark:text-white mb-6">Bereit fuer mehr Sichtbarkeit?</h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">Lassen Sie uns Ihre KI-Praesenz analysieren und massgeschneiderte Strategien entwickeln.</p>
+          <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900 dark:text-white mb-6">Bereit für mehr Sichtbarkeit?</h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">Lassen Sie uns Ihre KI-Präsenz analysieren und maßgeschneiderte Strategien entwickeln.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/ranking/cybersecurity" className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors">Ranking ansehen</Link>
             <a href="mailto:info@geo-intelligence.de" className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Kontakt aufnehmen</a>

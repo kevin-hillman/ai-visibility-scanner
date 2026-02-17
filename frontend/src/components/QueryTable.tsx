@@ -78,7 +78,7 @@ export default function QueryTable({ queries }: QueryTableProps) {
                 ? 'bg-teal-600 text-white'
                 : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
             }`}>
-            {m === 'all' ? 'Alle' : m === 'yes' ? 'Erwaehnt' : 'Nicht erwaehnt'}
+            {m === 'all' ? 'Alle' : m === 'yes' ? 'Erwähnt' : 'Nicht erwähnt'}
           </button>
         ))}
       </div>
@@ -124,7 +124,7 @@ export default function QueryTable({ queries }: QueryTableProps) {
                       <PlatformDot platform={r.platform} />
                       <span className="text-gray-600 dark:text-gray-300 w-20 shrink-0">{platformNames[r.platform]}</span>
                       <span className={`font-medium shrink-0 ${r.mentioned ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400'}`}>
-                        {r.mentioned ? `Pos. ${r.position ?? '\u2013'}` : 'Nicht erwaehnt'}
+                        {r.mentioned ? `Pos. ${r.position ?? '\u2013'}` : 'Nicht erwähnt'}
                       </span>
                       {r.mentioned && <SentimentIcon sentiment={r.sentiment} />}
                       {r.context && r.mentioned && (
@@ -143,7 +143,7 @@ export default function QueryTable({ queries }: QueryTableProps) {
 
       {grouped.length === 0 && (
         <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
-          Keine Ergebnisse fuer die gewaehlten Filter.
+          Keine Ergebnisse für die gewählten Filter.
         </div>
       )}
     </div>

@@ -26,7 +26,7 @@ export default function RankingPageClient({ industry, initialRanking, initialErr
 
   const handleRequestScan = (entry?: { company_name: string; domain: string }) => {
     if (entry) {
-      setLeadPrefill({ company_name: entry.company_name, message: `Bitte einen KI-Sichtbarkeits-Scan fuer ${entry.company_name} (${entry.domain}) erstellen.` });
+      setLeadPrefill({ company_name: entry.company_name, message: `Bitte einen KI-Sichtbarkeits-Scan für ${entry.company_name} (${entry.domain}) erstellen.` });
       setLeadFormNonce((n) => n + 1);
     } else {
       setLeadPrefill(undefined);
