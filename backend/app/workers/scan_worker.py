@@ -193,7 +193,8 @@ async def run_scan(scan_id: str, db: Session, settings: Settings) -> None:
         scan.recommendations = recommendations
         scan.report_html = report_html
 
-        # Kosten aggregieren
+        # Kosten aggregieren (flush damit die api_cost Records in der DB sind)
+        db.flush()
         from sqlalchemy import func
         cost_totals = db.query(
             func.sum(ApiCallCost.cost_usd),
