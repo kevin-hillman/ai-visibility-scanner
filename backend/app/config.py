@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: str = ""
     PERPLEXITY_API_KEY: str = ""
     INDUSTRY_CONFIG_DIR: str = "./industries"
-    CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+    CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001"]
     API_PREFIX: str = "/api/v1"
 
     model_config = {
