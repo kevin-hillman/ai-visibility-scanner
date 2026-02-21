@@ -204,7 +204,7 @@ class LLMClient:
                 {"role": "user", "content": query}
             ],
             temperature=0.7,
-            max_tokens=1000,
+            max_completion_tokens=1000,
         )
 
         usage = {}
